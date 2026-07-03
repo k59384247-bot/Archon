@@ -53,8 +53,12 @@ def load_base_model_4bit(base_model: str):
         bnb_4bit_compute_dtype=torch.bfloat16,
         bnb_4bit_use_double_quant=True,
     )
+    # Pin the whole model to a single GPU rather than "auto" -- letting accelerate
+    # split layers across both T4s triggers a device-mismatch bug in trl's chunked
+    # cross-entropy loss. batch_size=1 + gradient checkpointing keep it under 16GB
+    # on one card anyway, so there's no need for the split.
     model = AutoModelForCausalLM.from_pretrained(
-        base_model, quantization_config=bnb_config, device_map="auto",
+        base_model, quantization_config=bnb_config, device_map={"": 0},
     )
     return model
 
