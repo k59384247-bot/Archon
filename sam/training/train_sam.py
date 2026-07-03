@@ -122,7 +122,7 @@ def main():
         args=training_args,
         train_dataset=dataset["train"],
         eval_dataset=dataset["test"],
-        tokenizer=tokenizer,
+        processing_class=tokenizer,
         callbacks=[TimeBudgetCallback(SESSION_TIME_BUDGET_SECONDS)],
     )
 

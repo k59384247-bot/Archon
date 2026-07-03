@@ -58,7 +58,7 @@ def main():
         tokens["labels"] = tokens["input_ids"].copy()
         return tokens
 
-    tokenized = split.map(tokenize, remove_columns=split["train"].column_names, num_proc=4)
+    tokenized = split.map(tokenize, remove_columns=split["train"].column_names)
     tokenized_out = run_dir / "tokenized_dataset"
     tokenized.save_to_disk(str(tokenized_out))
 
