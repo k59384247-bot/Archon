@@ -101,10 +101,17 @@ def main():
         print("Starting fresh run")
         model = get_peft_model(base_model, get_lora_config())
 
+    # Gradient checkpointing trades compute for activation memory -- needed to fit
+    # an 8B model's training activations on a single 16GB T4. enable_input_require_grads()
+    # is required alongside it for a quantized base model + LoRA, otherwise backprop
+    # fails with "element 0 of tensors does not require grad".
+    model.enable_input_require_grads()
+
     training_args = TrainingArguments(
         output_dir=str(checkpoint_dir),
-        per_device_train_batch_size=2,
-        gradient_accumulation_steps=8,
+        per_device_train_batch_size=1,
+        gradient_accumulation_steps=16,
+        gradient_checkpointing=True,
         learning_rate=2e-4,
         num_train_epochs=args.epochs,
         save_strategy="steps",
