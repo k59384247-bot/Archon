@@ -476,7 +476,7 @@ This is the fix for wasted Kaggle session time re-tokenizing 23k examples every 
 from datasets import load_dataset
 from transformers import AutoTokenizer
 
-BASE_MODEL = "meta-llama/Llama-3.1-8B-Instruct"  # swap per Section 1.6 base-model comparison
+BASE_MODEL = "unsloth/Meta-Llama-3.1-8B-Instruct"  # swap per Section 1.6 base-model comparison
 MAX_LEN = 2048
 
 def main():
@@ -522,7 +522,7 @@ from transformers import (
 )
 from trl import SFTTrainer
 
-BASE_MODEL = "meta-llama/Llama-3.1-8B-Instruct"
+BASE_MODEL = "unsloth/Meta-Llama-3.1-8B-Instruct"
 CHECKPOINT_DIR = "sam/training/checkpoints"
 SESSION_TIME_BUDGET_SECONDS = 7 * 3600 - 15 * 60  # stop 15 min before Kaggle's 7-hour limit
 
@@ -543,6 +543,8 @@ class TimeBudgetCallback(TrainerCallback):
 
 
 def load_base_model_4bit():
+    # NOTE: unsloth/Meta-Llama-3.1-8B-Instruct-bnb-4bit is pre-quantized to bnb 4-bit;
+    # switching BASE_MODEL to that repo would let this function skip on-the-fly quantization.
     bnb_config = BitsAndBytesConfig(
         load_in_4bit=True,
         bnb_4bit_quant_type="nf4",
@@ -663,7 +665,7 @@ import torch
 from peft import PeftModel
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
-BASE_MODEL = "meta-llama/Llama-3.1-8B-Instruct"
+BASE_MODEL = "unsloth/Meta-Llama-3.1-8B-Instruct"
 ADAPTER_PATH = "sam/training/checkpoints/latest_adapter"
 MERGED_OUT = "sam/training/merged_fp16"
 
